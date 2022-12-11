@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+
+<body>
+    <h2>Register From</h2>
+    <form id="form_register" method="post" enctype="multipart/form-data">
+        <label>First name:</label><br>
+        <input type="text" id="fname" name="fname" value=""><br>
+        <label>Last name:</label><br>
+        <input type="text" id="lname" name="lname" value=""><br>
+        <label>Email:</label><br>
+        <input type="text" id="email" name="email" value=""><br>
+        <label>Password:</label><br>
+        <input type="password" id="password" name="password" value=""><br>
+        <label>Password confirm</label><br>
+        <input type="password" id="password_confirm" name="password_confirm" value=""><br>
+        <p>มีบัญชีอยู่แล้ว <a href="/login">เข้าสู่ระบบ</a></p>
+        <button type="submit" id="submit_register">Register</button>
+        <p id="error_register"></p>
+    </form>
+</body>
+
+<script>
+    var form = document.getElementById('form_register')
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let submit_register = document.getElementById('submit_register')
+
+        //imput
+        let fname = document.getElementById('fname');
+        let lname = document.getElementById('lname');
+        let email = document.getElementById('email');
+        let password = document.getElementById('password');
+        let password_confirm = document.getElementById('password_confirm');
+
+        //function
+        const loading = () => {
+            submit_register.innerHTML = 'Registering';
+            submit_register.setAttribute("disabled", "disabled");
+            fname.setAttribute("disabled", "disabled");
+            lname.setAttribute("disabled", "disabled");
+            email.setAttribute("disabled", "disabled");
+            password.setAttribute("disabled", "disabled");
+            password_confirm.setAttribute("disabled", "disabled");
+        }
+
+        const Nonloading = () => {
+            fname.removeAttribute("disabled");
+            lname.removeAttribute("disabled");
+            email.removeAttribute("disabled");
+            password.removeAttribute("disabled");
+            password_confirm.removeAttribute("disabled");
+            submit_register.innerHTML = 'Register';
+            submit_register.removeAttribute("disabled");
+        }
+
+        loading();
+
+        if (password.value !== password_confirm.value) {
+            console.log('not have');
+            document.getElementById('error_register').innerHTML = 'รหัสผ่านทั้งสองไม่ตรงกัน';
+            Nonloading();
+        } else {
+            if (!fname.value || !lname.value || !email.value || !password.value || !password_confirm.value) {
+                console.log('not have');
+                document.getElementById('error_register').innerHTML = 'โปรดกรอกข้อมูลให้ตรงถ้วน';
+                Nonloading();
+            } else {
+
+                fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        fname: fname.value,
+                        lname: lname.value,
+                        email: email.value,
+                        password: password.value,
+                        password_confirm: password_confirm.value
+                    })
+                })
+
+                    .then(function (res) {
+                        return res.json()
+                    })
+                    .then(function (data) {
+                        console.log(data)
+                        if (!data.error) {
+                            // location.replace("/")
+                        }
+
+                        document.getElementById('error_register').innerHTML = '';
+                        Nonloading();
+                    }).catch(error => console.error(`Error:`, error));
+
+            }
+        }
+
+
+    });
+</script>
+
+</html>
