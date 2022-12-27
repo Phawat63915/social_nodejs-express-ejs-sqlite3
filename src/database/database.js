@@ -6,8 +6,6 @@ let dbbase = './database.db';
 if (!fs.existsSync('./database.db')) {
     sqlitedb(dbbase , sqlitedb.OPEN_READWRITE, {verbose: console.log })
         .exec(fs.readFileSync("./src/database/model/database.sql").toString());
-} else {
-    console.log('xxxxxxx')
 }
 
 export const db = new sqlitedb('./database.db' , sqlitedb.OPEN_READWRITE, (err) => {
