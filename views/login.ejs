@@ -10,15 +10,79 @@
 
 <body>
     <h2>Login From</h2>
-    <form id="from_login" method="post" enctype="multipart/form-data">
+    <form id="form_login" method="post" enctype="multipart/form-data">
         <label>Email:</label><br>
         <input type="text" id="email" name="email" value=""><br>
         <label>Password:</label><br>
         <input type="password" id="password" name="password" value=""><br>
         <p>ยังไม่มีบัญชี <a href="/register">สมัคร</a></p>
-        <button type="submit" id="submit_login">Register</button>
+        <button type="submit" id="submit_login">Login</button>
         <p id="error_login"></p>
     </form>
 </body>
+
+<script>
+    var form = document.getElementById('form_login')
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let submit_login = document.getElementById('submit_login')
+
+        //imput
+        let email = document.getElementById('email');
+        let password = document.getElementById('password');
+        //function
+        const loading = () => {
+            submit_login.innerHTML = 'Logining';
+            submit_login.setAttribute("disabled", "disabled");
+            email.setAttribute("disabled", "disabled");
+            password.setAttribute("disabled", "disabled");
+        }
+
+        const Nonloading = () => {
+            email.removeAttribute("disabled");
+            password.removeAttribute("disabled");
+            submit_login.innerHTML = 'Login';
+            submit_login.removeAttribute("disabled");
+        }
+
+        if (!email.value || !password.value) {
+            console.log('not have');
+            document.getElementById('error_login').innerHTML = 'โปรดกรอกข้อมูลให้ตรงถ้วน';
+            Nonloading();
+        } else {
+            loading();
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    email: email.value,
+                    password: password.value
+                })
+            })
+
+                .then(function (res) {
+                    return res.json()
+                })
+                .then(function (data) {
+                    console.log(data)
+                    if (!data.error) {
+                        location.replace("/")
+                    } else {
+                        document.getElementById('error_login').innerHTML = '';
+                        Nonloading();
+                    }
+                }).catch(error => console.error(`Error:`, error));
+
+        }
+
+
+    });
+</script>
+
 
 </html>

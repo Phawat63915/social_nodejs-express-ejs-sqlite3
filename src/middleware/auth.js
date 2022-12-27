@@ -1,9 +1,9 @@
-export function checkAuth() {
-    return false
+export function checkAuth(req) {
+    return req.session.user
 }
 
 export function isAuth(req, res, next) {
-    if (checkAuth()) {
+    if (checkAuth(req)) {
         next()
     } else {
         res.redirect('/login')
@@ -11,7 +11,7 @@ export function isAuth(req, res, next) {
 } 
 
 export function isNonAuth (req, res, next) {
-    if (!checkAuth()) {
+    if (!checkAuth(req)) {
         next()
     } else {
         res.redirect('/')
